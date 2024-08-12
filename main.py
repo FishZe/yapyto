@@ -2,6 +2,7 @@
 import argparse
 import logging
 import os
+import shutil
 
 import format
 
@@ -38,10 +39,16 @@ if __name__ == '__main__':
     elif len(os.listdir(output_dir)) > 0:
         logger.warning("Output directory is not empty, files will be overwritten.")
         for f in os.listdir(output_dir):
-            os.remove(os.path.join(output_dir, f))
+            if os.path.isfile(os.path.join(output_dir, f)):
+                os.remove(os.path.join(output_dir, f))
+            else:
+                shutil.rmtree(os.path.join(output_dir, f))
     logger.info(f"Start to convert the data. Input directory: {input_dir}, output directory: {output_dir}")
 
     if format.is_custom_data(input_dir):
+        if os.path.basename(output_dir) != "testdata":
+            output_dir = os.path.join(output_dir, "testdata")
+            logger.warning(f"Output directory should be named as testdata. The data will convert to {output_dir}.")
         format.convert_custom_dir(input_dir, output_dir, args)
     elif format.is_hydro_export(input_dir):
         format.convert_hydro_export_dir(input_dir, output_dir, args)

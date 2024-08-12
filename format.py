@@ -131,6 +131,8 @@ def convert_custom_dir(input_dir: str, output_dir: str, args: argparse.Namespace
         logger.error("Failed to load config.yaml and generate config, exit.")
         exit(1)
     logger.info(f"Config file is loaded from {input_dir}, save to {output_dir}")
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
     config_file.save(output_dir)
     logger.info("Config file is saved, start to convert the data.")
     convert_data_dir(config_file, input_dir, output_dir, args.rename_output)
