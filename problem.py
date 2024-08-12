@@ -9,7 +9,7 @@ logger = logging.getLogger()
 
 
 class Case:
-    def __init__(self, input_file: str, answer_file: str, score: int = None, time_limit: int = 1000,
+    def __init__(self, input_file: str, answer_file: str | None, score: int = None, time_limit: int = 1000,
                  memory_limit: int = 100) -> None:
         self.input_file = input_file
         self.answer_file = answer_file
@@ -110,7 +110,7 @@ def case_legal(case: dict) -> bool:
     return (("score" in case and type(case["score"]) is int and case["score"] > 0) or "score" not in case) and \
         ("input" in case and type(case["input"]) is str and case["input"].lower().endswith(".in")) and \
         ("output" in case and type(case["output"]) is str and (
-                    case["output"].lower().endswith(".out") or case["input"].lower().endswith(".ans")))
+                case["output"].lower().endswith(".out") or case["input"].lower().endswith(".ans")))
 
 
 def get_problem_cases(problem: Config) -> list:

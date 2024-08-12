@@ -74,35 +74,35 @@ def generate_empty_file(files: list, dir: str):
             f.write(bytes('\n', 'utf-8'))
 
 
-def load_data_dir(dir: str):
+def load_data_dir(input_dir: str):
     config_file = None
-    if os.path.isfile(os.path.join(dir, "config.yaml")):
-        logger.info(f"Find config.yaml from {dir}")
-        config_file = config.load_config_file(os.path.join(dir, "config.yaml"))
+    if os.path.isfile(os.path.join(input_dir, "config.yaml")):
+        logger.info(f"Find config.yaml from {input_dir}")
+        config_file = config.load_config_file(os.path.join(input_dir, "config.yaml"))
         if config_file is None:
-            logger.warning(f"Failed to load config.yaml from {dir}")
+            logger.warning(f"Failed to load config.yaml from {input_dir}")
         else:
-            logger.info(f"Config.yaml is loaded from {dir}")
+            logger.info(f"Config.yaml is loaded from {input_dir}")
             if config_file.task_type is None or config_file.judge_type is None or \
                     (len(config_file.cases) == 0 and len(config_file.subtasks) == 0):
-                logger.warning(f"Config.yaml from {dir} is not complete, try to find cases.")
-                cases = config.generate_cases(dir)
+                logger.warning(f"Config.yaml from {input_dir} is not complete, try to find cases.")
+                cases = config.generate_cases(input_dir)
                 if len(cases) == 0:
-                    logger.error(f"No cases are found in {dir}")
+                    logger.error(f"No cases are found in {input_dir}")
                     return
                 config_file.task_type = "simple"
                 config_file.cases = cases
     if config_file is None:
-        logger.info(f"Try to generate config from {dir} by file name.")
-        config_file = config.generate_config_file(dir)
+        logger.info(f"Try to generate config from {input_dir} by file name.")
+        config_file = config.generate_config_file(input_dir)
         if config_file is None:
-            logger.error(f"Failed to generate config from {dir}")
+            logger.error(f"Failed to generate config from {input_dir}")
             return
-        logger.info(f"Config is generated from {dir}, find {len(config_file.cases)} cases.")
-    not_found_files = check_config_case_file(config_file, dir)
+        logger.info(f"Config is generated from {input_dir}, find {len(config_file.cases)} cases.")
+    not_found_files = check_config_case_file(config_file, input_dir)
     if len(not_found_files) != 0:
-        logger.warning(f"Case IO files {not_found_files} are not found in {dir}, try to generate empty file.")
-        generate_empty_file(not_found_files, dir)
+        logger.warning(f"Case IO files {not_found_files} are not found in {input_dir}, try to generate empty file.")
+        generate_empty_file(not_found_files, input_dir)
     return config_file
 
 

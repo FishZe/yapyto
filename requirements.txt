@@ -1,2 +1,3 @@
-PyYAML==6.0.2
-toml==0.10.2
+psutil~=6.0.0
+PyYAML~=6.0.2
+toml~=0.10.2
