@@ -53,7 +53,7 @@ def get_subtasks_cases_none_sum(subtasks: list) -> int:
 
 def average_score(scores: list, total_score: int) -> list:
     while None in scores:
-        scores[scores.index(None)] = (total_score - sum([s for s in scores if type(s) == int])) // scores.count(None)
+        scores[scores.index(None)] = (total_score - sum([s for s in scores if type(s) is int])) // scores.count(None)
     return scores
 
 

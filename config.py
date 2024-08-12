@@ -205,12 +205,12 @@ def load_config_file(file: str) -> None | problem.Config:
                     "time"] is not None else None
                 subtask_memory_limit = util.convert_memory(subtask["memory"]) if "memory" in subtask and subtask[
                     "memory"] is not None else None
-                subtask_if = subtask["if"] if "if" in subtask and type(subtask["if"]) == list else []
+                subtask_if = subtask["if"] if "if" in subtask and type(subtask["if"]) is list else []
                 cases = []
                 for case in subtasks_cases[i]:
                     if "score" in case:
                         logger.warning(
-                            f"Subtask {i} Case {case["input"]}/{case["output"]} has score, it will be ignored.")
+                            f"Subtask {i} Case {case['input']}/{case['output']} has score, it will be ignored.")
                     case_time_limit, case_memory_limit = problem.get_case_limit(case)
                     cases.append(problem.Case(case["input"], case["output"], None, case_time_limit, case_memory_limit))
                 now_subtask = problem.Subtask(subtask["score"], sorted(cases), subtask["id"], subtask_if,

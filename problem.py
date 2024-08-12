@@ -22,7 +22,7 @@ class Case:
             self.time_limit == value.time_limit and self.memory_limit == value.memory_limit
 
     def __lt__(self, value: object) -> bool:
-        return util.extract_number(self.output_file) < util.extract_number(value.output_file) \
+        return util.extract_number(self.answer_file) < util.extract_number(value.answer_file) \
             if util.extract_number(self.input_file) == util.extract_number(value.input_file) \
             else util.extract_number(self.input_file) < util.extract_number(value.input_file)
 
@@ -40,11 +40,11 @@ class Case:
 
 
 class Subtask:
-    def __init__(self, score: int, cases: list, id: int, condition: list = [], time_limit: int = 1000,
+    def __init__(self, score: int, cases: list, subtask_id: int, condition: list = [], time_limit: int = 1000,
                  memory_limit: int = 256) -> None:
         self.score = score
         self.cases = cases
-        self.id = id
+        self.id = subtask_id
         self.condition = condition
         self.time_limit = time_limit
         self.memory_limit = memory_limit
@@ -107,9 +107,9 @@ def merge_cases(cases: list) -> list:
 
 
 def case_legal(case: dict) -> bool:
-    return (("score" in case and type(case["score"]) == int and case["score"] > 0) or "score" not in case) and \
-        ("input" in case and type(case["input"]) == str and case["input"].lower().endswith(".in")) and \
-        ("output" in case and type(case["output"]) == str and (
+    return (("score" in case and type(case["score"]) is int and case["score"] > 0) or "score" not in case) and \
+        ("input" in case and type(case["input"]) is str and case["input"].lower().endswith(".in")) and \
+        ("output" in case and type(case["output"]) is str and (
                     case["output"].lower().endswith(".out") or case["input"].lower().endswith(".ans")))
 
 
@@ -127,9 +127,9 @@ def get_case_limit(case: dict) -> tuple:
     if "time" in case and case["time"] is not None:
         case_time_limit = util.convert_time(case["time"])
         logger.warning(
-            f"Case {case["input"]}/{case["output"]} has time limit, time limit for case is not supported in sastoj, but it will be kept.")
+            f"Case {case['input']}/{case['output']} has time limit, time limit for case is not supported in sastoj, but it will be kept.")
     if "memory" in case and case["memory"] is not None:
         case_memory_limit = util.convert_memory(case["memory"])
         logger.warning(
-            f"Case {case["input"]}/{case["output"]} has memory limit, memory limit for case is not supported in sastoj, but it will be kept.")
+            f"Case {case['input']}/{case['output']} has memory limit, memory limit for case is not supported in sastoj, but it will be kept.")
     return case_time_limit, case_memory_limit

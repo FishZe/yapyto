@@ -9,31 +9,32 @@ import util
 logger = logging.getLogger()
 
 
-def is_custom_data(dir: str) -> bool:
+def is_custom_data(input_dir: str) -> bool:
     # Only .in .out/.ans and config.yaml (optional) file in the directory
     # No extra files and directories, or the directory is not custom data file
     find_output = False
-    for f in os.listdir(dir):
+    for f in os.listdir(input_dir):
         if os.path.isdir(f):
-            logger.warning(f"{f} is a directory, {dir} is not a custom data directory.")
+            logger.warning(f"{f} is a directory, {input_dir} is not a custom data directory.")
             return False
         elif f.endswith(".out") or f.endswith(".ans"):
             find_output = True
     if not find_output:
-        logger.warning(f"No output file is found in {dir}.")
+        logger.warning(f"No output file is found in {input_dir}.")
         return False
-    logger.info(f"{dir} is a custom data directory.")
+    logger.info(f"{input_dir} is a custom data directory.")
     return True
 
 
-def is_hydro_export(dir: str) -> bool:
-    logger.info(f"Check {dir} is a hydro export directory.")
-    for f in os.listdir(dir):
-        if os.path.isdir(os.path.join(dir, f)) and \
-                os.path.exists(os.path.join(dir, f, "testdata")) and is_custom_data(os.path.join(dir, f, "testdata")):
+def is_hydro_export(input_dir: str) -> bool:
+    logger.info(f"Check {input_dir} is a hydro export directory.")
+    for f in os.listdir(input_dir):
+        if os.path.isdir(os.path.join(input_dir, f)) and \
+                os.path.exists(os.path.join(input_dir, f, "testdata")) and \
+                is_custom_data(os.path.join(input_dir, f, "testdata")):
             logger.info(f"find {f} is a problem data file")
             return True
-    logger.info(f"Can not find problem file, {dir} is not a hydro export directory.")
+    logger.info(f"Can not find problem file, {input_dir} is not a hydro export directory.")
     return False
 
 
@@ -41,8 +42,8 @@ def get_hydro_export_problems(input_dir: str) -> list:
     problems = []
     for f in os.listdir(input_dir):
         if os.path.isdir(os.path.join(input_dir, f)) and \
-                os.path.exists(os.path.join(input_dir, f, "testdata")) and is_custom_data(
-            os.path.join(input_dir, f, "testdata")):
+                os.path.exists(os.path.join(input_dir, f, "testdata")) and \
+                is_custom_data(os.path.join(input_dir, f, "testdata")):
             problems.append(os.path.join(input_dir, f))
     logger.info(f"Find {len(problems)} problems in {input_dir}.")
     return problems
