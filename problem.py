@@ -127,9 +127,9 @@ def get_case_limit(case: dict) -> tuple:
     if "time" in case and case["time"] is not None:
         case_time_limit = util.convert_time(case["time"])
         logger.warning(
-            f"Case {case["input"]}/{case["ouuput"]} has time limit, time limit for case is not supported in sastoj, but it will be kept.")
+            f"Case {case["input"]}/{case["output"]} has time limit, time limit for case is not supported in sastoj, but it will be kept.")
     if "memory" in case and case["memory"] is not None:
         case_memory_limit = util.convert_memory(case["memory"])
         logger.warning(
-            f"Case {case["input"]}/{case["ouuput"]} has memory limit, memory limit for case is not supported in sastoj, but it will be kept.")
+            f"Case {case["input"]}/{case["output"]} has memory limit, memory limit for case is not supported in sastoj, but it will be kept.")
     return case_time_limit, case_memory_limit
