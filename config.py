@@ -18,13 +18,13 @@ def load_config_file(file: str) -> None | problem.Config:
         "checker_type"] is not None else "default"
     judge_type = "classic"
     if problem_type == "interactive":
-        judge_type = "interactive"
+        # judge_type = "interactive"
         logger.warning("Interactive problem is not supported, this problem **CAN NOT** be converted.")
         return
         # TODO: interactive problem and special judge
     elif problem_type != "default" or checker_type != "default":
         logger.warning(
-            f"Unsupport problem type {problem_type} or checker_type {checker_type}, this problem **CAN NOT** be converted.")
+            f"Unsupported problem type {problem_type} or checker_type {checker_type}, this problem **CAN NOT** be converted.")
         return
     logger.info(f"Config file type: {problem_type}, checker type: {checker_type}, convert to: {judge_type}")
 
@@ -48,7 +48,7 @@ def load_config_file(file: str) -> None | problem.Config:
         sum_subtask = False
         for i, subtask in enumerate(config["subtasks"]):
             logger.debug(f"Now checking subtask {i}, id: {subtask['id'] if 'id' in subtask else None}")
-            subtask["id"] = subtask["id"] if "id" in subtask and type(subtask["id"]) == int else i + 1
+            subtask["id"] = subtask["id"] if "id" in subtask and type(subtask["id"]) is int else i + 1
             # check subtask and cases
             if "type" not in subtask or subtask["type"] is None:
                 logger.warning(f"Subtask {i} Subtask type is not specified, use min as default.")
@@ -64,7 +64,7 @@ def load_config_file(file: str) -> None | problem.Config:
             if "cases" not in subtask or len(subtask["cases"]) == 0:
                 logger.warning(f"Subtask {i} Subtask cases is not specified, this subtask will be ignored.")
                 continue
-            if "score" in subtask and type(subtask["score"]) == int and subtask["score"] < len(subtask["cases"]):
+            if "score" in subtask and type(subtask["score"]) is int and subtask["score"] < len(subtask["cases"]):
                 logger.warning(
                     f"Subtask {i} Subtask score is less than the number of cases, this subtask will be ignored.")
                 continue
@@ -114,21 +114,21 @@ def load_config_file(file: str) -> None | problem.Config:
             else:
                 logger.info("Some subtasks score is not specified, try using 100 as default.")
                 score = 100
-        if sum([s for s in subtasks_scores if type(s) == int]) > score:
+        if sum([s for s in subtasks_scores if type(s) is int]) > score:
             logger.error(
                 "The sum of subtasks score is greater than the score in config file, this problem will be ignored.")
             return
-        elif sum([s for s in subtasks_scores if type(s) == int]) == score and None not in subtasks_scores:
+        elif sum([s for s in subtasks_scores if type(s) is int]) == score and None not in subtasks_scores:
             logger.info("The sum of subtasks score is equal to the score in config file.")
-        elif sum([s for s in subtasks_scores if type(s) == int]) == score and None in subtasks_scores:
+        elif sum([s for s in subtasks_scores if type(s) is int]) == score and None in subtasks_scores:
             logger.error(
                 "The sum of subtasks score is equal to the score in config file, but some subtasks score is not specified, this problem will be ignored.")
             return
-        elif sum([s for s in subtasks_scores if type(s) == int]) < score and None not in subtasks_scores:
+        elif sum([s for s in subtasks_scores if type(s) is int]) < score and None not in subtasks_scores:
             logger.error(
                 "The sum of subtasks score is less than the score in config file, this problem will be ignored.")
             return
-        elif sum([s for s in subtasks_scores if type(s) == int]) < score and None in subtasks_scores:
+        elif sum([s for s in subtasks_scores if type(s) is int]) < score and None in subtasks_scores:
             logger.info(
                 "The sum of subtasks score is less than the score in config file, but some subtasks score is not specified.")
             if min_subtask:
@@ -142,6 +142,8 @@ def load_config_file(file: str) -> None | problem.Config:
         task_type = ""
         cases = []
         subtasks = []
+        max_time_limit = 0
+        max_memory_limit = 0
         # convert subtask to sastoj schema
         if sum_subtask:
             # type sum: keep and convert to task type simple
@@ -152,15 +154,18 @@ def load_config_file(file: str) -> None | problem.Config:
                 if "time" in subtask or "memory" in subtask or "if" in subtask:
                     logger.warning(
                         f"Subtask {i} has time, memory or if limit, but this subtask will be change to cases, these args will be ignored.")
-                if "score" in subtask and type(subtask["score"]) == int:
+                    subtask_time_limit = util.convert_time(subtask["time"]) if "time" in subtask and subtask["time"] is not None else None
+                    subtask_memory_limit = util.convert_memory(subtask["memory"]) if "memory" in subtask and subtask["memory"] is not None else None
+                    max_time_limit = max(max_time_limit, subtask_time_limit if subtask_time_limit is not None else 0)
+                    max_memory_limit = max(max_memory_limit, subtask_memory_limit if subtask_memory_limit is not None else 0)
+                if "score" in subtask and type(subtask["score"]) is int:
                     cases_score = []
                     for case in subtasks_cases[i]:
-                        cases_score.append(case["score"] if "score" in case and type(case["score"]) == int else None)
+                        cases_score.append(case["score"] if "score" in case and type(case["score"]) is int else None)
                     if sum([s for s in cases_score if s is not None]) == subtask["score"] and None not in cases_score:
                         logger.info(f"Subtask {i} has valid score.")
                     elif sum([s for s in cases_score if s is not None]) < subtask["score"] and None in cases_score and \
-                            subtask["score"] - sum([s for s in cases_score if s is not None]) >= cases_score.count(
-                        None):
+                            subtask["score"] - sum([s for s in cases_score if s is not None]) >= cases_score.count(None):
                         logger.info(f"Subtask {i} has invalid score, try to figure it.")
                         cases_score = util.average_score(cases_score, subtask["score"])
                     else:
@@ -170,6 +175,8 @@ def load_config_file(file: str) -> None | problem.Config:
                                                          subtask["score"])
                     for j, case in enumerate(subtasks_cases[i]):
                         case_time_limit, case_memory_limit = problem.get_case_limit(case)
+                        max_time_limit = max(max_time_limit, case_time_limit if case_time_limit is not None else 0)
+                        max_memory_limit = max(max_memory_limit, case_memory_limit if case_memory_limit is not None else 0)
                         cases.append(problem.Case(case["input"], case["output"], cases_score[j], case_time_limit,
                                                   case_memory_limit))
                 else:
@@ -205,6 +212,8 @@ def load_config_file(file: str) -> None | problem.Config:
                     "time"] is not None else None
                 subtask_memory_limit = util.convert_memory(subtask["memory"]) if "memory" in subtask and subtask[
                     "memory"] is not None else None
+                max_time_limit = max(max_time_limit, subtask_time_limit if subtask_time_limit is not None else 0)
+                max_memory_limit = max(max_memory_limit, subtask_memory_limit if subtask_memory_limit is not None else 0)
                 subtask_if = subtask["if"] if "if" in subtask and type(subtask["if"]) is list else []
                 cases = []
                 for case in subtasks_cases[i]:
@@ -217,7 +226,9 @@ def load_config_file(file: str) -> None | problem.Config:
                                               subtask_time_limit, subtask_memory_limit)
                 subtasks.append(now_subtask)
 
-        config = problem.Config(judge_type, task_type, score, time_limit, memory_limit)
+        time_limit = max(max_time_limit, time_limit if time_limit is not None else 0)
+        memory_limit = max(max_memory_limit, memory_limit if memory_limit is not None else 0)
+        config = problem.Config(judge_type, task_type, score, time_limit if time_limit != 0 else None, memory_limit if memory_limit != 0 else None)
         if task_type == "simple":
             config.cases = sorted(cases)
         else:

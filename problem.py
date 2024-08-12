@@ -63,8 +63,8 @@ class Config:
         self.judge_type = judge_type
         self.task_type = task_type
         self.score = score
-        self.time_limit = time_limit
-        self.memory_limit = memory_limit
+        self.time_limit = time_limit if time_limit is not None else 1000
+        self.memory_limit = memory_limit if memory_limit is not None else 256
         self.cases = []
         self.subtasks = []
 
