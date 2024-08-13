@@ -78,6 +78,7 @@ def generate_answer_file(command: list, output_dir: str, cases: list) -> list:
     logger.info(f"Start to generate answer files to {output_dir} with command {command}.")
     new_cases = []
     for c in cases:
+        c.answer_file = c.input_file.replace(".in", ".ans")
         task = processTask(command, os.path.join(output_dir, c.input_file),
                            os.path.join(output_dir, c.input_file.replace(".in", ".ans")))
         if task.run() != 0:
