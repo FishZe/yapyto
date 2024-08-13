@@ -1,6 +1,6 @@
 # YaPyTo
 
-`YaPyTo`是<del>下一代</del>信息学竞赛题目格式转换和配置文件生成工具，将符合[`hydro`](https://github.com/hydro-dev/Hydro)的数据和`config.yaml`的题目，或由[`hydro题库`](https://hydro.ac/d/tk/p)下载的题目，转换为符合[`sastoj`](https://github.com/NJUPT-SAST/sastoj/)[`schema`](https://github.com/Jisu-Woniu/rsjudge-test-cases-schema)的格式，同时也可以识别测试数据，生成满足条件的配置文件，来源于[`yarusto`](https://github.com/NJUPT-SAST/yarusto)。
+`YaPyTo`是<del>下一代</del>信息学竞赛题目格式转换和配置文件生成工具，将符合[`hydro`](https://github.com/hydro-dev/Hydro)的数据和`config.yaml`的题目，或由[`hydro题库`](https://hydro.ac/d/tk/p)下载的题目，转换为符合[`sastoj`](https://github.com/NJUPT-SAST/sastoj/)[`schema`](https://github.com/Jisu-Woniu/rsjudge-test-cases-schema)的格式；同时也可以识别测试数据，生成满足条件的配置文件；给定数据生成器或标程运行的命令，也可以生成输入输出文件和对应的配置文件，来源于[`yarusto`](https://github.com/NJUPT-SAST/yarusto)。
 
 ## 兼容性
 
@@ -26,21 +26,46 @@ pip install -r requirements.txt
 ```
 使用
 ```text
-usage: main.py [-h] [-i INPUT] [-o OUTPUT] [--rename-output]
+usage: main.py [-h] [-i INPUT] [-o OUTPUT] [--rename-output] [--generate] [-c CASE] [--generate-command GENERATE_COMMAND] [--std-command STD_COMMAND]
 
 A converter that convert the config.yaml from hydro to the config.toml of sastoj schema.
 
 options:
-  -h, --help            show this help message and exit
-  -i INPUT, --input INPUT
-                        input directory, such as ../testdata
-  -o OUTPUT, --output OUTPUT
-                        output directory
-  --rename-output       rename the output file to answer file
+  -h, --help                            show this help message and exit
+  -i INPUT, --input INPUT               input directory, such as ../testdata
+  -o OUTPUT, --output OUTPUT            output directory
+  --rename-output                       rename the output file to answer file
+  --generate                            generate the input file or answer file
+  -c CASE, --case CASE                  case sum
+  --generate-command GENERATE_COMMAND   the command to generate the input file
+  --std-command STD_COMMAND             the command to generate the answer file
 ```
+
+1. 根据给定`hydro`题目文件转换，使用`-i`指定题目文件目录，使用`-o`指定输出目录
+
+    ```bash
+    python main.py -i ./example/problem -o ./example/testdata
+    ```
+
+2. 给定不包含配置文件的测试点输入输出文件，生成配置文件，并补全分数，命令同上
+
+3. 给定测试输入文件和标程运行命令，生成配置文件和标准输出：
+
+    ```bash
+    python main.py --generate -i ./example/problem_input --std-command './std' -o ./example/testdata
+    ```
+
+4. 给定数据生成器运行命令和标程运行命令，生成配置文件和测试点输入输出文件，使用`-c`指定生成数量，默认为`10`:
+
+    ```bash
+    python .\main.py --generate -c 22 --generate-command "python -c 'import random;print(random.randint(0, 65536), random.randint(0, 65536))'" --std-command "python -c 's = input().split();print(int(s[0]) + int(s[1]))'"
+    ```
 
 ### 输入目录应满足的格式：
 1. `type=custom`
+
+    如果使用目录下的输入文件，给定标程运行命令，生成标准输出，请使用如下目录结构（不包含输出文件和配置文件）
+
     ```text
     .
     ├── 1.in
