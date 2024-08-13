@@ -210,7 +210,7 @@ def load_config_file(file: str) -> None | problem.Config:
                 for case in subtasks_cases[i]:
                     if "score" in case:
                         logger.warning(
-                            f"Subtask {i} Case {case["input"]}/{case["output"]} has score, it will be ignored.")
+                            f"Subtask {i} Case {case['input']}/{case['output']} has score, it will be ignored.")
                     case_time_limit, case_memory_limit = problem.get_case_limit(case)
                     cases.append(problem.Case(case["input"], case["output"], None, case_time_limit, case_memory_limit))
                 now_subtask = problem.Subtask(subtask["score"], sorted(cases), subtask["id"], subtask_if,
