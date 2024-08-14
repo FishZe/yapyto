@@ -1,0 +1,54 @@
+name: Build and Release Python Binary
+
+on:
+  release:
+    types:
+    - created
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build binary with PyInstaller
+        run: |
+          pyinstaller --onefile main.py -n yapyto
+        shell: bash
+
+      - name: Package binary into ZIP (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          zip -j yapyto-${{ matrix.os }}-${{ github.ref_name }}.zip dist/yapyto*
+        shell: bash
+
+      - name: Package binary into ZIP (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          powershell Compress-Archive -Path dist\yapyto.exe -DestinationPath yapyto-${{ matrix.os }}-${{ github.ref_name }}.zip
+
+      - name: Upload ZIP to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: yapyto-${{ matrix.os }}-${{ github.ref_name }}.zip
+          asset_name: yapyto-${{ matrix.os }}-${{ github.ref_name }}.zip
+          asset_content_type: application/zip
