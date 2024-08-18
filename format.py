@@ -78,7 +78,7 @@ def load_data_dir(input_dir: str):
     config_file = None
     if os.path.isfile(os.path.join(input_dir, "config.yaml")):
         logger.info(f"Find config.yaml from {input_dir}")
-        config_file = config.load_config_file(os.path.join(input_dir, "config.yaml"))
+        config_file = config.load_yaml_config_file(os.path.join(input_dir, "config.yaml"))
         if config_file is None:
             logger.warning(f"Failed to load config.yaml from {input_dir}")
         else:
@@ -92,6 +92,11 @@ def load_data_dir(input_dir: str):
                     return
                 config_file.task_type = "simple"
                 config_file.cases = cases
+    elif os.path.isfile(os.path.join(input_dir, "config.json")):
+        logger.info(f"Find config.json from {input_dir}, try to load it to sastoj config file")
+        config_file = config.load_json_config_file(os.path.join(input_dir, "config.json"))
+        if config_file is None:
+            logger.warning(f"Failed to load config.json from {input_dir}")
     if config_file is None:
         logger.info(f"Try to generate config from {input_dir} by file name.")
         config_file = config.generate_config_file(input_dir)

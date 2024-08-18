@@ -106,11 +106,18 @@ def merge_cases(cases: list) -> list:
     return merged_cases
 
 
-def case_legal(case: dict) -> bool:
+def hydro_case_legal(case: dict) -> bool:
     return (("score" in case and type(case["score"]) is int and case["score"] > 0) or "score" not in case) and \
         ("input" in case and type(case["input"]) is str and case["input"].lower().endswith(".in")) and \
         ("output" in case and type(case["output"]) is str and (
                 case["output"].lower().endswith(".out") or case["input"].lower().endswith(".ans")))
+
+
+def sastoj_case_legal(case: dict) -> bool:
+    return (("score" in case and type(case["score"]) is int and case["score"] > 0) or "score" not in case) and \
+        ("input" in case and type(case["input"]) is str and case["input"].lower().endswith(".in")) and \
+        ("answer" in case and type(case["answer"]) is str and (
+                case["answer"].lower().endswith(".out") or case["input"].lower().endswith(".ans")))
 
 
 def get_problem_cases(problem: Config) -> list:
