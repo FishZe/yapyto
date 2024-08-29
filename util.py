@@ -33,12 +33,19 @@ def convert_memory(memory_str: str) -> int:
     # Convert memory string to megabyte
     if type(memory_str) is int:
         return int(memory_str)
-    if memory_str.lower().endswith("kb") or memory_str.lower().endswith("k") or memory_str.lower().endswith("kib"):
-        return int(float(memory_str[:memory_str.lower().find("k")]) / 1024)
-    if memory_str.lower().endswith("mb") or memory_str.lower().endswith("m") or memory_str.lower().endswith("mib"):
+    elif memory_str.lower().endswith("kb") or memory_str.lower().endswith("k"):
+        return int(float(memory_str[:memory_str.lower().find("k")]) / 1000)
+    # support kib to mb
+    elif memory_str.lower().endswith("kib"):
+        return int(float(memory_str[:memory_str.lower().find("kib")]) * 1024 / 1000 / 1000)
+    elif memory_str.lower().endswith("mb") or memory_str.lower().endswith("m"):
         return int(float(memory_str[:memory_str.lower().find("m")]))
-    if memory_str.lower().endswith("gb") or memory_str.lower().endswith("g") or memory_str.lower().endswith("gib"):
+    elif memory_str.lower().endswith("mib"):
+        return int(float(memory_str[:memory_str.lower().find("mib")]) * 1024 * 1024 / 1000 / 1000)
+    elif memory_str.lower().endswith("gb") or memory_str.lower().endswith("g"):
         return int(float(memory_str[:memory_str.lower().find("g")]) * 1024)
+    elif memory_str.lower().endswith("gib"):
+        return int(float(memory_str[:memory_str.lower().find("gib")]) * 1024 * 1024 * 1024 / 1000 / 1000)
     logger.warning(f"Memory string {memory_str} is not recognized. I'll try to extract the number.")
     return extract_number(memory_str)
 
